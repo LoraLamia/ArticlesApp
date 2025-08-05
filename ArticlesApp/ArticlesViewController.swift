@@ -16,9 +16,7 @@ class ArticlesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = .yellow
         setupTableView()
-        
     }
     
     private func setupTableView() {

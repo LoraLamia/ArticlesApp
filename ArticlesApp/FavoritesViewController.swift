@@ -6,24 +6,44 @@
 //
 
 import UIKit
+import PureLayout
 
 class FavoritesViewController: UIViewController {
+    
+    let favoritesTableView = UITableView()
+    let mockArticles = Article.sampleData
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .orange
-        // Do any additional setup after loading the view.
+        
+        setupTableView()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    private func setupTableView() {
+        view.addSubview(favoritesTableView)
+        favoritesTableView.autoPinEdgesToSuperviewEdges()
+        favoritesTableView.rowHeight = UITableView.automaticDimension
+        
+        favoritesTableView.delegate = self
+        favoritesTableView.dataSource = self
+        
+        favoritesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
     }
-    */
 
+}
+
+
+extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        mockArticles.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let article = mockArticles[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ArticlesTableViewCell", for: indexPath) as! ArticlesTableViewCell
+        cell.configure(with: article)
+        return cell
+    }
+    
+    
 }
