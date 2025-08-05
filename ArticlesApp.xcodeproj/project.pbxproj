@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		351EE0F82E421C0F00FE77CA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 351EE0F72E421C0F00FE77CA /* Alamofire */; };
 		351EE0FB2E421C6600FE77CA /* PureLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 351EE0FA2E421C6600FE77CA /* PureLayout */; };
+		351EE10A2E42369F00FE77CA /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 351EE1092E42369F00FE77CA /* MBProgressHUD */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				351EE10A2E42369F00FE77CA /* MBProgressHUD in Frameworks */,
 				351EE0FB2E421C6600FE77CA /* PureLayout in Frameworks */,
 				351EE0F82E421C0F00FE77CA /* Alamofire in Frameworks */,
 			);
@@ -87,6 +89,7 @@
 			packageProductDependencies = (
 				351EE0F72E421C0F00FE77CA /* Alamofire */,
 				351EE0FA2E421C6600FE77CA /* PureLayout */,
+				351EE1092E42369F00FE77CA /* MBProgressHUD */,
 			);
 			productName = ArticlesApp;
 			productReference = 351EE0C42E420B8000FE77CA /* ArticlesApp.app */;
@@ -119,6 +122,7 @@
 			packageReferences = (
 				351EE0F62E421C0F00FE77CA /* XCRemoteSwiftPackageReference "Alamofire" */,
 				351EE0F92E421C6600FE77CA /* XCRemoteSwiftPackageReference "PureLayout" */,
+				351EE1082E42369F00FE77CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 351EE0C52E420B8000FE77CA /* Products */;
@@ -362,6 +366,14 @@
 				minimumVersion = 3.1.9;
 			};
 		};
+		351EE1082E42369F00FE77CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jdg/MBProgressHUD";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -374,6 +386,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 351EE0F92E421C6600FE77CA /* XCRemoteSwiftPackageReference "PureLayout" */;
 			productName = PureLayout;
+		};
+		351EE1092E42369F00FE77CA /* MBProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 351EE1082E42369F00FE77CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
+			productName = MBProgressHUD;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

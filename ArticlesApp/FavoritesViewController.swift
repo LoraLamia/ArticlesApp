@@ -7,6 +7,7 @@
 
 import UIKit
 import PureLayout
+import Alamofire
 
 class FavoritesViewController: UIViewController {
     

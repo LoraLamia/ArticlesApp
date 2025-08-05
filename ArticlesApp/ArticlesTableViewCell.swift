@@ -65,7 +65,7 @@ class ArticlesTableViewCell: UITableViewCell {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
-        dateLabel.text = formatter.string(from: article.publishedAt)
+//        dateLabel.text = article.publishedAt
     }
     
 }
