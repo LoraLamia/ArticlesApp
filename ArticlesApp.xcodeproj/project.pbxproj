@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		351EE0F82E421C0F00FE77CA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 351EE0F72E421C0F00FE77CA /* Alamofire */; };
+		351EE0FB2E421C6600FE77CA /* PureLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 351EE0FA2E421C6600FE77CA /* PureLayout */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		351EE0C42E420B8000FE77CA /* ArticlesApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArticlesApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				351EE0FB2E421C6600FE77CA /* PureLayout in Frameworks */,
+				351EE0F82E421C0F00FE77CA /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +85,8 @@
 			);
 			name = ArticlesApp;
 			packageProductDependencies = (
+				351EE0F72E421C0F00FE77CA /* Alamofire */,
+				351EE0FA2E421C6600FE77CA /* PureLayout */,
 			);
 			productName = ArticlesApp;
 			productReference = 351EE0C42E420B8000FE77CA /* ArticlesApp.app */;
@@ -107,6 +116,10 @@
 			);
 			mainGroup = 351EE0BB2E420B8000FE77CA;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				351EE0F62E421C0F00FE77CA /* XCRemoteSwiftPackageReference "Alamofire" */,
+				351EE0F92E421C6600FE77CA /* XCRemoteSwiftPackageReference "PureLayout" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 351EE0C52E420B8000FE77CA /* Products */;
 			projectDirPath = "";
@@ -331,6 +344,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		351EE0F62E421C0F00FE77CA /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+		351EE0F92E421C6600FE77CA /* XCRemoteSwiftPackageReference "PureLayout" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PureLayout/PureLayout.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.9;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		351EE0F72E421C0F00FE77CA /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 351EE0F62E421C0F00FE77CA /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		351EE0FA2E421C6600FE77CA /* PureLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 351EE0F92E421C6600FE77CA /* XCRemoteSwiftPackageReference "PureLayout" */;
+			productName = PureLayout;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 351EE0BC2E420B8000FE77CA /* Project object */;
 }
