@@ -16,7 +16,7 @@ class ArticlesViewController: UIViewController {
     var articles: [Article] = []
     //    var mockArticles = Article.sampleData
     let headers: HTTPHeaders = [
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTFmYjIzNDJmOGJmZTk2Y2NhYmM3NiIsInVzZXJuYW1lIjoidGVzdCIsInJvbGUiOiJCYXNpYyIsImlhdCI6MTc1NDM5NzQ3NSwiZXhwIjoxNzU0NDA4Mjc1fQ.wgNll0oMi4RW1e2HdElLUyr8X065ElUyDbzJUf7UixY"
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTMwNzk2MWUwNjM0NmZhYjE1NDcxOSIsInVzZXJuYW1lIjoiam9obi5kb2Uuc2Vjb25kIiwicm9sZSI6IkJhc2ljIiwiaWF0IjoxNzU0NDY2MTk4LCJleHAiOjE3NTQ0NzY5OTh9.lLTfwg4ug1xLLNr3gp3HGHbLAVAGHCzihGFgFtz6W3o"
     ]
     
     override func viewDidLoad() {
@@ -81,9 +81,22 @@ extension ArticlesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let article = articles[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "ArticlesTableViewCell", for: indexPath) as! ArticlesTableViewCell
-        cell.configure(with: article)
+        cell.delegate = self
+        cell.configure(article: article)
         return cell
     }
     
-    
+}
+
+
+extension ArticlesViewController: ArticlesTableViewCellDelegate {
+    func didTapFavoriteButton(article: Article) {
+//        if FavoritesSingleton.shared.isFavorite(article) {
+//            FavoritesSingleton.shared.removeFromFavorites(article: article)
+//        } else {
+//            FavoritesSingleton.shared.addToFavorites(article: article)
+//        }
+        
+        FavoritesSingleton.shared.isFavorite(article) ? FavoritesSingleton.shared.removeFromFavorites(article: article) : FavoritesSingleton.shared.addToFavorites(article: article)
+    }
 }
