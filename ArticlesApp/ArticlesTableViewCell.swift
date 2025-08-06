@@ -47,12 +47,13 @@ class ArticlesTableViewCell: UITableViewCell {
     }
     
     private func setupConstraints() {
+        favoriteButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
+        favoriteButton.autoAlignAxis(toSuperviewAxis: .horizontal)
+        favoriteButton.autoSetDimensions(to: CGSize(width: 30, height: 30))
+        
         titleLabel.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
         titleLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
-        
-        favoriteButton.autoAlignAxis(.horizontal, toSameAxisOf: titleLabel)
-        favoriteButton.autoPinEdge(.leading, to: .trailing, of: titleLabel, withOffset: 16)
-        favoriteButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
+        titleLabel.autoPinEdge(.trailing, to: .leading, of: favoriteButton, withOffset: -12)
         
         authorLabel.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 6)
         authorLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
