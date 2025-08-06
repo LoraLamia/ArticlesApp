@@ -69,7 +69,11 @@ class ArticlesViewController: UIViewController {
                     let title = article.title.lowercased().contains(searchText)
                     let summary = article.summary.lowercased().contains(searchText)
                     let author = article.author.lowercased().contains(searchText)
-                    return title || summary || author
+                    let topic = article.topic.lowercased().contains(searchText)
+                    let tags = article.tags.contains { tag in
+                        tag.lowercased().contains(searchText)
+                    }
+                    return title || summary || author || topic || tags
                 }
             }
             
