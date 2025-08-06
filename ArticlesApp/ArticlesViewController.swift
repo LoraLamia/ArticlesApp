@@ -26,6 +26,11 @@ class ArticlesViewController: UIViewController {
         fetchArticles()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        articlesTableView.reloadData()
+    }
+    
     private func setupTableView() {
         view.addSubview(articlesTableView)
         articlesTableView.autoPinEdgesToSuperviewEdges()
@@ -91,11 +96,6 @@ extension ArticlesViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension ArticlesViewController: ArticlesTableViewCellDelegate {
     func didTapFavoriteButton(article: Article) {
-//        if FavoritesSingleton.shared.isFavorite(article) {
-//            FavoritesSingleton.shared.removeFromFavorites(article: article)
-//        } else {
-//            FavoritesSingleton.shared.addToFavorites(article: article)
-//        }
         
         FavoritesSingleton.shared.isFavorite(article) ? FavoritesSingleton.shared.removeFromFavorites(article: article) : FavoritesSingleton.shared.addToFavorites(article: article)
     }

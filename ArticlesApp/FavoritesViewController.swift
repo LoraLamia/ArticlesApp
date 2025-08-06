@@ -45,8 +45,21 @@ extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let article = FavoritesSingleton.shared.favoritesArticles[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "ArticlesTableViewCell", for: indexPath) as! ArticlesTableViewCell
+        cell.delegate = self
         cell.configure(article: article)
         return cell
+    }
+        
+}
+
+
+
+extension FavoritesViewController: ArticlesTableViewCellDelegate {
+    func didTapFavoriteButton(article: Article) {
+        if FavoritesSingleton.shared.isFavorite(article) {
+            FavoritesSingleton.shared.removeFromFavorites(article: article)
+        }
+        favoritesTableView.reloadData()
     }
     
     
