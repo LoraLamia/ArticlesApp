@@ -17,15 +17,17 @@ class ArticlesViewController: UIViewController {
     var allArticlesLoaded = false
     
     let articlesTableView = UITableView()
+    let searchTextField = UITextField()
     var articles: [Article] = []
     //    var mockArticles = Article.sampleData
     let headers: HTTPHeaders = [
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTMwNzk2MWUwNjM0NmZhYjE1NDcxOSIsInVzZXJuYW1lIjoiam9obi5kb2Uuc2Vjb25kIiwicm9sZSI6IkJhc2ljIiwiaWF0IjoxNzU0NDY2MTk4LCJleHAiOjE3NTQ0NzY5OTh9.lLTfwg4ug1xLLNr3gp3HGHbLAVAGHCzihGFgFtz6W3o"
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTM0OGJiMWUwNjM0NmZhYjE1NDc4NyIsInVzZXJuYW1lIjoiam9obi5kb2UudGhpcmQiLCJyb2xlIjoiQmFzaWMiLCJpYXQiOjE3NTQ0ODI4NzUsImV4cCI6MTc1NDQ5MzY3NX0.cSW4ZORedw2_2qppbYgLT01tH9HvwEEVjIPYkA3vqA0"
     ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setupTextField()
         setupTableView()
         fetchArticles()
     }
@@ -35,15 +37,36 @@ class ArticlesViewController: UIViewController {
         articlesTableView.reloadData()
     }
     
+    private func setupTextField() {
+        view.addSubview(searchTextField)
+        
+        searchTextField.placeholder = "Search Articles"
+        searchTextField.borderStyle = .roundedRect
+        searchTextField.backgroundColor = .systemGray6
+        searchTextField.addTarget(self, action: #selector(searchTextFieldChanged), for: .editingChanged)
+        
+        searchTextField.autoPinEdge(toSuperviewSafeArea: .top)
+        searchTextField.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
+        searchTextField.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
+        searchTextField.autoSetDimension(.height, toSize: 40)
+    }
+    
+    @objc private func searchTextFieldChanged() {
+        
+    }
+    
     private func setupTableView() {
         view.addSubview(articlesTableView)
-        articlesTableView.autoPinEdgesToSuperviewEdges()
+    
         articlesTableView.rowHeight = UITableView.automaticDimension
-        
         articlesTableView.delegate = self
         articlesTableView.dataSource = self
-        
         articlesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
+        
+        articlesTableView.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 8)
+        articlesTableView.autoPinEdge(toSuperviewEdge: .leading)
+        articlesTableView.autoPinEdge(toSuperviewEdge: .trailing)
+        articlesTableView.autoPinEdge(toSuperviewSafeArea: .bottom)
     }
     
     private func fetchArticles() {
@@ -69,7 +92,6 @@ class ArticlesViewController: UIViewController {
             
             switch dataResponse.result {
             case .success(let articlesResponse):
-                //                print(articlesResponse)
                 self.handleSuccesCase(articlesResponse: articlesResponse)
             case .failure:
                 self.handleErrorCase()
