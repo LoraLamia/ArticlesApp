@@ -1,6 +1,6 @@
 import Foundation
 
-struct Article: Decodable {
+struct Article: Codable {
     let id: String
     let title: String
     let summary: String
@@ -43,16 +43,16 @@ extension Article {
 }
 
 
-struct ArticlesResponse: Decodable {
+struct ArticlesResponse: Codable {
     let articles: ArticlesContainer
 }
 
-struct ArticlesContainer: Decodable {
+struct ArticlesContainer: Codable {
     let metadata: Metadata
     let data: [Article]
 }
 
-struct Metadata: Decodable {
+struct Metadata: Codable {
     let totalCount: Int
     let page: Int
     let pageSize: Int
