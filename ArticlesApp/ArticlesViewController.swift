@@ -12,6 +12,10 @@ import MBProgressHUD
 
 class ArticlesViewController: UIViewController {
     
+    var currentPage = 1
+    var isLoadingMore = false
+    var allArticlesLoaded = false
+    
     let articlesTableView = UITableView()
     var articles: [Article] = []
     //    var mockArticles = Article.sampleData
@@ -43,20 +47,29 @@ class ArticlesViewController: UIViewController {
     }
     
     private func fetchArticles() {
+        guard !isLoadingMore else { return }
+        isLoadingMore = true
+        
+        let parameters: [String: String] = [
+            "page": "\(currentPage)",
+            "pageSize": "20",
+            "sort": "-1"
+        ]
         
         AF.request(
             "http://localhost:3000/api/articles",
             method: .get,
-            parameters: ["page": "1", "pageSize": "20", "sort": "-1"],
+            parameters: parameters,
             headers: headers
         )
         .validate()
         .responseDecodable(of: ArticlesResponse.self) { [weak self] dataResponse in
             guard let self = self else { return }
+            self.isLoadingMore = false
             
             switch dataResponse.result {
             case .success(let articlesResponse):
-                print(articlesResponse)
+                //                print(articlesResponse)
                 self.handleSuccesCase(articlesResponse: articlesResponse)
             case .failure:
                 self.handleErrorCase()
@@ -65,7 +78,15 @@ class ArticlesViewController: UIViewController {
     }
     
     private func handleSuccesCase(articlesResponse: ArticlesResponse) {
-        self.articles = articlesResponse.articles.data
+        let moreArticles = articlesResponse.articles.data
+        
+        if moreArticles.isEmpty {
+            self.allArticlesLoaded = true
+            return
+        }
+        
+        self.articles.append(contentsOf: moreArticles)
+        self.currentPage += 1
         self.articlesTableView.reloadData()
     }
     
@@ -99,4 +120,19 @@ extension ArticlesViewController: ArticlesTableViewCellDelegate {
         
         FavoritesSingleton.shared.isFavorite(article) ? FavoritesSingleton.shared.removeFromFavorites(article: article) : FavoritesSingleton.shared.addToFavorites(article: article)
     }
+}
+
+extension ArticlesViewController {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+        
+        if offsetY > contentHeight - height - 100 {
+            if !isLoadingMore && !allArticlesLoaded {
+                fetchArticles()
+            }
+        }
+    }
+    
 }
