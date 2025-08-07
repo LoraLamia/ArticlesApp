@@ -1,3 +1,10 @@
+//
+//  Article.swift
+//  ArticlesApp
+//
+//  Created by Lora Zubic on 05.08.2025..
+//
+
 import Foundation
 
 struct Article: Codable {
@@ -8,10 +15,6 @@ struct Article: Codable {
     let topic: String
     let tags: [String]
     let publishedAt: Date
-
-    enum CodingKeys: String, CodingKey {
-        case id, title, summary, author, topic, tags, publishedAt
-    }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
