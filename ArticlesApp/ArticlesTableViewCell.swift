@@ -16,8 +16,7 @@ class ArticlesTableViewCell: UITableViewCell {
     private let authorLabel = UILabel()
     private let dateLabel = UILabel()
     private let summaryLabel = UILabel()
-    private let tagsLabel = UILabel()
-    private let topicLabel = UILabel()
+    private let tagsAndTopicLabel = UILabel()
     private let favoriteButton = UIButton()
     
     private var article: Article?
@@ -37,27 +36,52 @@ class ArticlesTableViewCell: UITableViewCell {
         contentView.addSubview(authorLabel)
         contentView.addSubview(dateLabel)
         contentView.addSubview(summaryLabel)
-        contentView.addSubview(tagsLabel)
-        contentView.addSubview(topicLabel)
+        contentView.addSubview(tagsAndTopicLabel)
         contentView.addSubview(favoriteButton)
         
+        editViews()
+        setupConstraints()
+    }
+    
+    private func editViews() {
+        self.selectionStyle = .none
+        
+        contentView.backgroundColor = UIColor.systemGray6
+        contentView.layer.cornerRadius = 12
+        contentView.layer.masksToBounds = true
+        
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.1
+        layer.shadowOffset = CGSize(width: 0, height: 2)
+        layer.shadowRadius = 4
+        layer.masksToBounds = false
+        backgroundColor = .clear
+        
         titleLabel.font = .systemFont(ofSize: 16, weight: .bold)
+        titleLabel.textColor = .label
         titleLabel.numberOfLines = 0
         
         authorLabel.font = .systemFont(ofSize: 14)
+        authorLabel.textColor = .secondaryLabel
+        
         dateLabel.font = .systemFont(ofSize: 12)
+        dateLabel.textColor = .secondaryLabel
         
         summaryLabel.font = .systemFont(ofSize: 10)
         summaryLabel.textColor = .darkGray
         summaryLabel.numberOfLines = 0
         
-        tagsLabel.font = .systemFont(ofSize: 12)
-        tagsLabel.textColor = .systemBlue
-        tagsLabel.numberOfLines = 0
+        tagsAndTopicLabel.font = .systemFont(ofSize: 12)
+        tagsAndTopicLabel.textColor = .systemBlue
+        tagsAndTopicLabel.numberOfLines = 0
+        
+        favoriteButton.tintColor = .systemBlue
+        favoriteButton.layer.shadowColor = UIColor.systemBlue.cgColor
+        favoriteButton.layer.shadowRadius = 2
+        favoriteButton.layer.shadowOpacity = 0.5
+        favoriteButton.layer.shadowOffset = CGSize(width: 0, height: 1)
         
         favoriteButton.addTarget(self, action: #selector(favoriteButtonPressed), for: .touchUpInside)
-        
-        setupConstraints()
     }
     
     private func setupConstraints() {
@@ -79,16 +103,16 @@ class ArticlesTableViewCell: UITableViewCell {
         summaryLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
         summaryLabel.autoPinEdge(.trailing, to: .leading, of: favoriteButton, withOffset: -12)
         
-        tagsLabel.autoPinEdge(.top, to: .bottom, of: summaryLabel, withOffset: 4)
-        tagsLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
-        tagsLabel.autoPinEdge(.trailing, to: .leading, of: favoriteButton, withOffset: -12)
-        tagsLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: 12)
+        tagsAndTopicLabel.autoPinEdge(.top, to: .bottom, of: summaryLabel, withOffset: 4)
+        tagsAndTopicLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
+        tagsAndTopicLabel.autoPinEdge(.trailing, to: .leading, of: favoriteButton, withOffset: -12)
+        tagsAndTopicLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: 12)
     }
     
     @objc private func favoriteButtonPressed() {
         guard let article = article else { return }
         delegate?.didTapFavoriteButton(article: article)
-        setImageForButton()
+        setAnimationForButton()
     }
     
     func configure(article: Article) {
@@ -110,8 +134,7 @@ class ArticlesTableViewCell: UITableViewCell {
             if !tagText.isEmpty { tagText += " | " }
             tagText += "Tags: \(article.tags.joined(separator: ", "))"
         }
-        tagsLabel.text = tagText
-        
+        tagsAndTopicLabel.text = tagText
         setImageForButton()
     }
     
@@ -119,6 +142,18 @@ class ArticlesTableViewCell: UITableViewCell {
         guard let article = article else { return }
         let imageName = FavoritesSingleton.shared.isFavorite(article) ? "star.fill" : "star"
         favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
+    }
+    
+    private func setAnimationForButton() {
+        setImageForButton()
+        
+        UIView.animate(withDuration: 0.2, animations: {
+            self.favoriteButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+        }) { _ in
+            UIView.animate(withDuration: 0.2) {
+                self.favoriteButton.transform = CGAffineTransform.identity
+            }
+        }
     }
     
 }

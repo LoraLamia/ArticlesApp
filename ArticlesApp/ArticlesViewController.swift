@@ -29,28 +29,13 @@ class ArticlesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupTextField()
-        setupTableView()
+        setupViews()
         fetchArticles()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         articlesTableView.reloadData()
-    }
-    
-    private func setupTextField() {
-        view.addSubview(searchTextField)
-        
-        searchTextField.placeholder = "Search Articles"
-        searchTextField.borderStyle = .roundedRect
-        searchTextField.backgroundColor = .systemGray6
-        searchTextField.addTarget(self, action: #selector(searchTextFieldChanged), for: .editingChanged)
-        
-        searchTextField.autoPinEdge(toSuperviewSafeArea: .top)
-        searchTextField.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
-        searchTextField.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
-        searchTextField.autoSetDimension(.height, toSize: 40)
     }
     
     @objc private func searchTextFieldChanged() {
@@ -86,15 +71,43 @@ class ArticlesViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: searchWorkItem!)
     }
     
-    private func setupTableView() {
+    private func setupViews() {
+        view.addSubview(searchTextField)
         view.addSubview(articlesTableView)
+        
+        searchTextField.addTarget(self, action: #selector(searchTextFieldChanged), for: .editingChanged)
         
         articlesTableView.rowHeight = UITableView.automaticDimension
         articlesTableView.delegate = self
         articlesTableView.dataSource = self
         articlesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
         
-        articlesTableView.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 8)
+        editViews()
+        setupConstraints()
+    }
+    
+    private func editViews() {
+        searchTextField.backgroundColor = .systemGray6
+        searchTextField.layer.cornerRadius = 12
+        searchTextField.layer.borderWidth = 1.5
+        searchTextField.layer.borderColor = UIColor.systemBlue.withAlphaComponent(0.4).cgColor
+        
+        searchTextField.textColor = .label
+        searchTextField.font = .systemFont(ofSize: 14)
+        searchTextField.placeholder = "Search articles"
+    }
+    
+    private func setupConstraints() {
+        searchTextField.autoPinEdge(toSuperviewSafeArea: .top)
+        searchTextField.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
+        searchTextField.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
+        searchTextField.autoSetDimension(.height, toSize: 40)
+        
+        let padding = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: 40))
+        searchTextField.leftView = padding
+        searchTextField.leftViewMode = .always
+        
+        articlesTableView.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 12)
         articlesTableView.autoPinEdge(toSuperviewEdge: .leading)
         articlesTableView.autoPinEdge(toSuperviewEdge: .trailing)
         articlesTableView.autoPinEdge(toSuperviewSafeArea: .bottom)
