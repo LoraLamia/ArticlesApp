@@ -19,7 +19,7 @@ class ArticlesViewController: UIViewController {
     
     private let articlesTableView = UITableView()
     private let searchTextField = UITextField()
-    private let sortingSegmentedControl = UISegmentedControl(items: ["Ascending", "Descending"])
+    private let sortButton = UIButton()
     
     private var articles: [Article] = []
     private var filteredArticles: [Article] = []
@@ -76,11 +76,6 @@ class ArticlesViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: searchWorkItem!)
     }
     
-    @objc private func sortingChanged() {
-        isDescendingSort = (sortingSegmentedControl.selectedSegmentIndex == 0)
-        sortArticlesByDate()
-    }
-    
     @objc private func resfreshArticles() {
         currentPage = 1
         allArticlesLoaded = false
@@ -90,11 +85,20 @@ class ArticlesViewController: UIViewController {
         fetchArticles()
     }
     
+    @objc private func sortArticles() {
+        isDescendingSort.toggle()
+        
+        let imageName = isDescendingSort ? "arrow.up" : "arrow.down"
+        sortButton.setImage(UIImage(systemName: imageName), for: .normal)
+        
+        sortArticlesByDate()
+    }
+    
     
     private func setupViews() {
         view.addSubview(searchTextField)
         view.addSubview(articlesTableView)
-        view.addSubview(sortingSegmentedControl)
+        view.addSubview(sortButton)
         
         searchTextField.addTarget(self, action: #selector(searchTextFieldChanged), for: .editingChanged)
         
@@ -106,9 +110,7 @@ class ArticlesViewController: UIViewController {
         refreshControl.addTarget(self, action: #selector(resfreshArticles), for: .valueChanged)
         articlesTableView.refreshControl = refreshControl
         
-        sortingSegmentedControl.selectedSegmentIndex = 0
-        sortingSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
-        sortingSegmentedControl.addTarget(self, action: #selector(sortingChanged), for: .valueChanged)
+        sortButton.addTarget(self, action: #selector(sortArticles), for: .touchUpInside)
         
         editViews()
         setupConstraints()
@@ -124,35 +126,23 @@ class ArticlesViewController: UIViewController {
         searchTextField.font = .systemFont(ofSize: 14)
         searchTextField.placeholder = "Search articles"
         
-        sortingSegmentedControl.selectedSegmentTintColor = .systemBlue.withAlphaComponent(0.5)
-        let normalTextAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.systemBlue
-        ]
-        
-        let selectedTextAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.white
-        ]
-        
-        sortingSegmentedControl.setTitleTextAttributes(normalTextAttributes, for: .normal)
-        sortingSegmentedControl.setTitleTextAttributes(selectedTextAttributes, for: .selected)
+        sortButton.setImage(UIImage(systemName: "arrow.down"), for: .normal)
     }
     
     private func setupConstraints() {
         searchTextField.autoPinEdge(toSuperviewSafeArea: .top)
         searchTextField.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
-        searchTextField.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
         searchTextField.autoSetDimension(.height, toSize: 40)
         
         let padding = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: 40))
         searchTextField.leftView = padding
         searchTextField.leftViewMode = .always
         
-        sortingSegmentedControl.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 12)
-        sortingSegmentedControl.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
-        sortingSegmentedControl.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
-        sortingSegmentedControl.autoSetDimension(.height, toSize: 30)
+        sortButton.autoPinEdge(toSuperviewSafeArea: .top, withInset: 6)
+        sortButton.autoPinEdge(.leading, to: .trailing, of: searchTextField, withOffset: 6)
+        sortButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
         
-        articlesTableView.autoPinEdge(.top, to: .bottom, of: sortingSegmentedControl, withOffset: 12)
+        articlesTableView.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 12)
         articlesTableView.autoPinEdge(toSuperviewEdge: .leading)
         articlesTableView.autoPinEdge(toSuperviewEdge: .trailing)
         articlesTableView.autoPinEdge(toSuperviewSafeArea: .bottom)
