@@ -23,7 +23,7 @@ class ArticlesViewController: UIViewController {
     var searchWorkItem: DispatchWorkItem?
     
     let headers: HTTPHeaders = [
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTM0OGJiMWUwNjM0NmZhYjE1NDc4NyIsInVzZXJuYW1lIjoiam9obi5kb2UudGhpcmQiLCJyb2xlIjoiQmFzaWMiLCJpYXQiOjE3NTQ0ODI4NzUsImV4cCI6MTc1NDQ5MzY3NX0.cSW4ZORedw2_2qppbYgLT01tH9HvwEEVjIPYkA3vqA0"
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTQ1NWI0YWIxYmYzNDM2MWQ1ZTcxNSIsInVzZXJuYW1lIjoiam9obi5kb2UuZm91cnRoNCIsInJvbGUiOiJCYXNpYyIsImlhdCI6MTc1NDU1MTczMiwiZXhwIjoxNzU0NTYyNTMyfQ.HcqbBuZiQTnzi3beZyCVW9RzfL9_xTWnh14kMgem7AU"
     ]
     
     override func viewDidLoad() {
@@ -88,7 +88,7 @@ class ArticlesViewController: UIViewController {
     
     private func setupTableView() {
         view.addSubview(articlesTableView)
-    
+        
         articlesTableView.rowHeight = UITableView.automaticDimension
         articlesTableView.delegate = self
         articlesTableView.dataSource = self

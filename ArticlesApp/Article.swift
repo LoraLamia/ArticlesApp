@@ -7,39 +7,35 @@ struct Article: Codable {
     let author: String
     let topic: String
     let tags: [String]
-    let publishedAt: String
-}
+    let publishedAt: Date
 
-extension Article {
-    static let sampleData: [Article] = [
-        Article(
-            id: "1",
-            title: "Swift 6 Released: Everything You Need to Know jhbejhafjewfjh giyadgjyawgdydga yuadguyawdgjy",
-            summary: "Apple has officially released Swift 6 with new concurrency features.",
-            author: "Ana Developer",
-            topic: "Programming",
-            tags: ["Swift", "Apple", "iOS"],
-            publishedAt: ""
-        ),
-        Article(
-            id: "2",
-            title: "Design Trends in Mobile Apps 2025",
-            summary: "A fresh look at the most popular UI/UX trends for mobile platforms.",
-            author: "Marko Dizajner",
-            topic: "Design",
-            tags: ["UI", "UX", "Mobile"],
-            publishedAt: ""
-        ),
-        Article(
-            id: "3",
-            title: "Why Everyone is Using Microservices in 2025",
-            summary: "Microservices architecture has become the standard for scalable systems.",
-            author: "Jelena Backend",
-            topic: "Backend",
-            tags: ["Architecture", "Microservices", "DevOps"],
-            publishedAt: ""
-        )
-    ]
+    enum CodingKeys: String, CodingKey {
+        case id, title, summary, author, topic, tags, publishedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decode(String.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        summary = try container.decode(String.self, forKey: .summary)
+        author = try container.decode(String.self, forKey: .author)
+        topic = try container.decode(String.self, forKey: .topic)
+        tags = try container.decode([String].self, forKey: .tags)
+
+        let dateString = try container.decode(String.self, forKey: .publishedAt)
+
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        guard let date = formatter.date(from: dateString) else {
+            throw DecodingError.dataCorruptedError(forKey: .publishedAt,
+                in: container,
+                debugDescription: "Date string does not match format expected by formatter.")
+        }
+
+        publishedAt = date
+    }
 }
 
 

@@ -98,6 +98,12 @@ class ArticlesTableViewCell: UITableViewCell {
         authorLabel.text = article.author
         summaryLabel.text = article.summary
         
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        dateLabel.text = formatter.string(from: article.publishedAt)
+        
         var tagText = ""
         tagText += "Topic: \(article.topic)"
         if !article.tags.isEmpty {
