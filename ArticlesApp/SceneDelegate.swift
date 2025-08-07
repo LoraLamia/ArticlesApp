@@ -32,7 +32,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                               image: UIImage(systemName: "star"),
                                               tag: 1)
         
-        tabBarController.viewControllers = [articlesVC, favoritesVC]
+        tabBarController.viewControllers = [
+            UINavigationController(rootViewController: articlesVC),
+            UINavigationController(rootViewController: favoritesVC)
+        ]
         
         let window: UIWindow = .init(windowScene: windowScene)
         window.rootViewController = tabBarController

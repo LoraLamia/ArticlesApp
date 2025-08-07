@@ -8,6 +8,10 @@
 import UIKit
 import PureLayout
 
+protocol ArticlesTableViewCellDelegate: AnyObject {
+    func didTapFavoriteButton(article: Article)
+}
+
 class ArticlesTableViewCell: UITableViewCell {
     
     weak var delegate: ArticlesTableViewCellDelegate?
@@ -23,27 +27,35 @@ class ArticlesTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupViews()
+        addSubviews()
+        setupConstraints()
+        styleViews()
+        addActions()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupViews() {
-        
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleLabel.text = ""
+        authorLabel.text = ""
+        dateLabel.text = ""
+        summaryLabel.text = ""
+        tagsAndTopicLabel.text = ""
+    }
+    
+    private func addSubviews() {
         contentView.addSubview(titleLabel)
         contentView.addSubview(authorLabel)
         contentView.addSubview(dateLabel)
         contentView.addSubview(summaryLabel)
         contentView.addSubview(tagsAndTopicLabel)
         contentView.addSubview(favoriteButton)
-        
-        editViews()
-        setupConstraints()
     }
     
-    private func editViews() {
+    private func styleViews() {
         self.selectionStyle = .none
         
         contentView.backgroundColor = UIColor.systemGray6
@@ -80,7 +92,9 @@ class ArticlesTableViewCell: UITableViewCell {
         favoriteButton.layer.shadowRadius = 2
         favoriteButton.layer.shadowOpacity = 0.5
         favoriteButton.layer.shadowOffset = CGSize(width: 0, height: 1)
-        
+    }
+    
+    private func addActions() {
         favoriteButton.addTarget(self, action: #selector(favoriteButtonPressed), for: .touchUpInside)
     }
     
@@ -145,11 +159,11 @@ class ArticlesTableViewCell: UITableViewCell {
     }
     
     private func setAnimationForButton() {
-        setImageForButton()
-        
         UIView.animate(withDuration: 0.2, animations: {
             self.favoriteButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
         }) { _ in
+            self.setImageForButton()
+            
             UIView.animate(withDuration: 0.2) {
                 self.favoriteButton.transform = CGAffineTransform.identity
             }
@@ -157,9 +171,3 @@ class ArticlesTableViewCell: UITableViewCell {
     }
     
 }
-
-
-protocol ArticlesTableViewCellDelegate: AnyObject {
-    func didTapFavoriteButton(article: Article)
-}
-
