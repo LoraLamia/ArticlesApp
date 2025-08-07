@@ -20,7 +20,6 @@ class ArticlesViewController: UIViewController {
     let searchTextField = UITextField()
     var articles: [Article] = []
     var filteredArticles: [Article] = []
-    var searchWorkItem: DispatchWorkItem?
     
     let headers: HTTPHeaders = [
         "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTQ1NWI0YWIxYmYzNDM2MWQ1ZTcxNSIsInVzZXJuYW1lIjoiam9obi5kb2UuZm91cnRoNCIsInJvbGUiOiJCYXNpYyIsImlhdCI6MTc1NDU1MTczMiwiZXhwIjoxNzU0NTYyNTMyfQ.HcqbBuZiQTnzi3beZyCVW9RzfL9_xTWnh14kMgem7AU"
@@ -39,36 +38,27 @@ class ArticlesViewController: UIViewController {
     }
     
     @objc private func searchTextFieldChanged() {
-        searchWorkItem?.cancel()
-        
         let searchText = searchTextField.text?.lowercased() ?? ""
         
-        searchWorkItem = DispatchWorkItem { [weak self] in
-            guard let self = self else { return }
-            
-            if searchText.isEmpty {
-                self.filteredArticles = self.articles
-            } else {
-                self.filteredArticles = self.articles.filter { article in
-                    
-                    let title = article.title.lowercased().contains(searchText)
-                    let summary = article.summary.lowercased().contains(searchText)
-                    let author = article.author.lowercased().contains(searchText)
-                    let topic = article.topic.lowercased().contains(searchText)
-                    let tags = article.tags.contains { tag in
-                        tag.lowercased().contains(searchText)
-                    }
-                    return title || summary || author || topic || tags
+        if searchText.isEmpty {
+            self.filteredArticles = self.articles
+        } else {
+            self.filteredArticles = self.articles.filter { article in
+                
+                let title = article.title.lowercased().contains(searchText)
+                let summary = article.summary.lowercased().contains(searchText)
+                let author = article.author.lowercased().contains(searchText)
+                let topic = article.topic.lowercased().contains(searchText)
+                let tags = article.tags.contains { tag in
+                    tag.lowercased().contains(searchText)
                 }
+                return title || summary || author || topic || tags
             }
-            
-            DispatchQueue.main.async {
-                self.articlesTableView.reloadData()
-            }
-            
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: searchWorkItem!)
+        DispatchQueue.main.async {
+            self.articlesTableView.reloadData()
+        }
     }
     
     private func setupViews() {
