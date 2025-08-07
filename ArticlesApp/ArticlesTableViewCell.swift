@@ -73,7 +73,7 @@ class ArticlesTableViewCell: UITableViewCell {
         authorLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
         
         dateLabel.autoAlignAxis(.horizontal, toSameAxisOf: authorLabel)
-        dateLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
+        dateLabel.autoPinEdge(.trailing, to: .leading, of: favoriteButton, withOffset: -12)
         
         summaryLabel.autoPinEdge(.top, to: .bottom, of: authorLabel, withOffset: 6)
         summaryLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
