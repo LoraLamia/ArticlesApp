@@ -25,8 +25,10 @@ class ArticlesViewController: UIViewController {
     private var filteredArticles: [Article] = []
     private var searchWorkItem: DispatchWorkItem?
     
+    private let refreshControl = UIRefreshControl()
+    
     let headers: HTTPHeaders = [
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTQ4MThlYWIxYmYzNDM2MWQ1ZTdhNyIsInVzZXJuYW1lIjoiam9obi5kb2UuNjYiLCJyb2xlIjoiQmFzaWMiLCJpYXQiOjE3NTQ1NjI5NTgsImV4cCI6MTc1NDU3Mzc1OH0.FvkjmVotM27KaiUKYVivD4VkPgnVssrMYHhNnjNEFcU"
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTRjMDcwYWIxYmYzNDM2MWQ1ZTgxZiIsInVzZXJuYW1lIjoiam9obi5kb2UudGVzdGlyYW5qZSIsInJvbGUiOiJCYXNpYyIsImlhdCI6MTc1NDU3OTA1NiwiZXhwIjoxNzU0NTg5ODU2fQ.pI8lSeB5EyX5rb-etbW-suaWBzjl5Htmdh_WJYemPO8"
     ]
     
     override func viewDidLoad() {
@@ -79,6 +81,15 @@ class ArticlesViewController: UIViewController {
         sortArticlesByDate()
     }
     
+    @objc private func resfreshArticles() {
+        currentPage = 1
+        allArticlesLoaded = false
+        articles.removeAll()
+        filteredArticles.removeAll()
+        articlesTableView.reloadData()
+        fetchArticles()
+    }
+    
     
     private func setupViews() {
         view.addSubview(searchTextField)
@@ -91,6 +102,9 @@ class ArticlesViewController: UIViewController {
         articlesTableView.delegate = self
         articlesTableView.dataSource = self
         articlesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
+        
+        refreshControl.addTarget(self, action: #selector(resfreshArticles), for: .valueChanged)
+        articlesTableView.refreshControl = refreshControl
         
         sortingSegmentedControl.selectedSegmentIndex = 0
         sortingSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
@@ -156,7 +170,7 @@ class ArticlesViewController: UIViewController {
     }
     
     private func fetchArticles() {
-        guard !isLoadingMore else { return }
+        guard !isLoadingMore || currentPage == 1 else { return }
         isLoadingMore = true
         
         let parameters: [String: String] = [
@@ -175,6 +189,7 @@ class ArticlesViewController: UIViewController {
         .responseDecodable(of: ArticlesResponse.self) { [weak self] dataResponse in
             guard let self = self else { return }
             self.isLoadingMore = false
+            self.refreshControl.endRefreshing()
             
             switch dataResponse.result {
             case .success(let articlesResponse):
