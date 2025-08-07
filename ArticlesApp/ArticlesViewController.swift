@@ -12,18 +12,21 @@ import MBProgressHUD
 
 class ArticlesViewController: UIViewController {
     
-    var currentPage = 1
-    var isLoadingMore = false
-    var allArticlesLoaded = false
+    private var currentPage = 1
+    private var isLoadingMore = false
+    private var allArticlesLoaded = false
+    private var isDescendingSort = false
     
-    let articlesTableView = UITableView()
-    let searchTextField = UITextField()
-    var articles: [Article] = []
-    var filteredArticles: [Article] = []
-    var searchWorkItem: DispatchWorkItem?
+    private let articlesTableView = UITableView()
+    private let searchTextField = UITextField()
+    private let sortingSegmentedControl = UISegmentedControl(items: ["Ascending", "Descending"])
+    
+    private var articles: [Article] = []
+    private var filteredArticles: [Article] = []
+    private var searchWorkItem: DispatchWorkItem?
     
     let headers: HTTPHeaders = [
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTQ1NWI0YWIxYmYzNDM2MWQ1ZTcxNSIsInVzZXJuYW1lIjoiam9obi5kb2UuZm91cnRoNCIsInJvbGUiOiJCYXNpYyIsImlhdCI6MTc1NDU1MTczMiwiZXhwIjoxNzU0NTYyNTMyfQ.HcqbBuZiQTnzi3beZyCVW9RzfL9_xTWnh14kMgem7AU"
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTQ4MThlYWIxYmYzNDM2MWQ1ZTdhNyIsInVzZXJuYW1lIjoiam9obi5kb2UuNjYiLCJyb2xlIjoiQmFzaWMiLCJpYXQiOjE3NTQ1NjI5NTgsImV4cCI6MTc1NDU3Mzc1OH0.FvkjmVotM27KaiUKYVivD4VkPgnVssrMYHhNnjNEFcU"
     ]
     
     override func viewDidLoad() {
@@ -63,7 +66,7 @@ class ArticlesViewController: UIViewController {
             }
             
             DispatchQueue.main.async {
-                self.articlesTableView.reloadData()
+                self.sortArticlesByDate()
             }
             
         }
@@ -71,9 +74,16 @@ class ArticlesViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: searchWorkItem!)
     }
     
+    @objc private func sortingChanged() {
+        isDescendingSort = (sortingSegmentedControl.selectedSegmentIndex == 0)
+        sortArticlesByDate()
+    }
+    
+    
     private func setupViews() {
         view.addSubview(searchTextField)
         view.addSubview(articlesTableView)
+        view.addSubview(sortingSegmentedControl)
         
         searchTextField.addTarget(self, action: #selector(searchTextFieldChanged), for: .editingChanged)
         
@@ -81,6 +91,10 @@ class ArticlesViewController: UIViewController {
         articlesTableView.delegate = self
         articlesTableView.dataSource = self
         articlesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
+        
+        sortingSegmentedControl.selectedSegmentIndex = 0
+        sortingSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        sortingSegmentedControl.addTarget(self, action: #selector(sortingChanged), for: .valueChanged)
         
         editViews()
         setupConstraints()
@@ -95,6 +109,18 @@ class ArticlesViewController: UIViewController {
         searchTextField.textColor = .label
         searchTextField.font = .systemFont(ofSize: 14)
         searchTextField.placeholder = "Search articles"
+        
+        sortingSegmentedControl.selectedSegmentTintColor = .systemBlue.withAlphaComponent(0.5)
+        let normalTextAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.systemBlue
+        ]
+        
+        let selectedTextAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.white
+        ]
+        
+        sortingSegmentedControl.setTitleTextAttributes(normalTextAttributes, for: .normal)
+        sortingSegmentedControl.setTitleTextAttributes(selectedTextAttributes, for: .selected)
     }
     
     private func setupConstraints() {
@@ -107,10 +133,26 @@ class ArticlesViewController: UIViewController {
         searchTextField.leftView = padding
         searchTextField.leftViewMode = .always
         
-        articlesTableView.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 12)
+        sortingSegmentedControl.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 12)
+        sortingSegmentedControl.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
+        sortingSegmentedControl.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
+        sortingSegmentedControl.autoSetDimension(.height, toSize: 30)
+        
+        articlesTableView.autoPinEdge(.top, to: .bottom, of: sortingSegmentedControl, withOffset: 12)
         articlesTableView.autoPinEdge(toSuperviewEdge: .leading)
         articlesTableView.autoPinEdge(toSuperviewEdge: .trailing)
         articlesTableView.autoPinEdge(toSuperviewSafeArea: .bottom)
+    }
+    
+    private func sortArticlesByDate() {
+        filteredArticles.sort {
+            isDescendingSort ? $0.publishedAt > $1.publishedAt : $0.publishedAt < $1.publishedAt
+        }
+        articlesTableView.reloadData()
+        
+        DispatchQueue.main.async {
+            self.articlesTableView.setContentOffset(.zero, animated: true)
+        }
     }
     
     private func fetchArticles() {
@@ -153,7 +195,7 @@ class ArticlesViewController: UIViewController {
         
         self.articles.append(contentsOf: moreArticles)
         self.filteredArticles = self.articles
-        
+        self.sortArticlesByDate()
         self.currentPage += 1
         self.articlesTableView.reloadData()
     }
