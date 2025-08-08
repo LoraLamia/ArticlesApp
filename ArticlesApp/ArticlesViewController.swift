@@ -24,11 +24,12 @@ class ArticlesViewController: UIViewController {
     private var articles: [Article] = []
     private var filteredArticles: [Article] = []
     private var searchWorkItem: DispatchWorkItem?
+    private var articleService = ArticleService()
     
     private let refreshControl = UIRefreshControl()
     
     let headers: HTTPHeaders = [
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTRjMDcwYWIxYmYzNDM2MWQ1ZTgxZiIsInVzZXJuYW1lIjoiam9obi5kb2UudGVzdGlyYW5qZSIsInJvbGUiOiJCYXNpYyIsImlhdCI6MTc1NDU3OTA1NiwiZXhwIjoxNzU0NTg5ODU2fQ.pI8lSeB5EyX5rb-etbW-suaWBzjl5Htmdh_WJYemPO8"
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTViODEzNWUyODJlMjMzZDc1NGU1ZiIsInVzZXJuYW1lIjoiam9obi5kb2UudGVzdGlyYW5qZTUiLCJyb2xlIjoiQmFzaWMiLCJpYXQiOjE3NTQ2NDI0NTEsImV4cCI6MTc1NDY1MzI1MX0.SN5C0nibRDo9x5aAft40pyN1ONivuin1JbZsJTx6oP0"
     ]
     
     override func viewDidLoad() {
@@ -76,7 +77,7 @@ class ArticlesViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: searchWorkItem!)
     }
     
-    @objc private func resfreshArticles() {
+    @objc private func refreshArticles() {
         currentPage = 1
         allArticlesLoaded = false
         articles.removeAll()
@@ -107,7 +108,7 @@ class ArticlesViewController: UIViewController {
         articlesTableView.dataSource = self
         articlesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
         
-        refreshControl.addTarget(self, action: #selector(resfreshArticles), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(refreshArticles), for: .valueChanged)
         articlesTableView.refreshControl = refreshControl
         
         sortButton.addTarget(self, action: #selector(sortArticles), for: .touchUpInside)
@@ -163,42 +164,27 @@ class ArticlesViewController: UIViewController {
         guard !isLoadingMore || currentPage == 1 else { return }
         isLoadingMore = true
         
-        let parameters: [String: String] = [
-            "page": "\(currentPage)",
-            "pageSize": "20",
-            "sort": "-1"
-        ]
-        
-        AF.request(
-            "http://localhost:3000/api/articles",
-            method: .get,
-            parameters: parameters,
-            headers: headers
-        )
-        .validate()
-        .responseDecodable(of: ArticlesResponse.self) { [weak self] dataResponse in
+        articleService.fetchArticles(page: currentPage) { [weak self] result in
             guard let self = self else { return }
             self.isLoadingMore = false
             self.refreshControl.endRefreshing()
             
-            switch dataResponse.result {
-            case .success(let articlesResponse):
-                self.handleSuccesCase(articlesResponse: articlesResponse)
-            case .failure:
+            switch result {
+            case .success(let newArticles):
+                self.handleSuccesCase(newArticles: newArticles)
+            case .failure(_):
                 self.handleErrorCase()
             }
         }
     }
     
-    private func handleSuccesCase(articlesResponse: ArticlesResponse) {
-        let moreArticles = articlesResponse.articles.data
-        
-        if moreArticles.isEmpty {
+    private func handleSuccesCase(newArticles: [Article]) {
+        if newArticles.isEmpty {
             self.allArticlesLoaded = true
             return
         }
         
-        self.articles.append(contentsOf: moreArticles)
+        self.articles.append(contentsOf: newArticles)
         self.filteredArticles = self.articles
         self.sortArticlesByDate()
         self.currentPage += 1
@@ -210,7 +196,6 @@ class ArticlesViewController: UIViewController {
         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default))
         present(alert, animated: true, completion: nil)
     }
-    
     
 }
 
