@@ -93,6 +93,8 @@ class ArticlesViewController: UIViewController {
         sortButton.setImage(UIImage(systemName: imageName), for: .normal)
         
         sortArticlesByDate()
+        
+        fetchTopics()
     }
     
     
@@ -176,6 +178,19 @@ class ArticlesViewController: UIViewController {
                 self.handleErrorCase()
             }
         }
+    }
+    
+    private func fetchTopics() {
+        articleService.fetchTopics(completion: { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let topics):
+                print(topics)
+            case .failure(_):
+                print("failed to fetch topics")
+            }
+        })
     }
     
     private func handleSuccesCase(newArticles: [Article]) {
