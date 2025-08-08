@@ -20,9 +20,17 @@ class ArticlesViewController: UIViewController {
     private let articlesTableView = UITableView()
     private let searchTextField = UITextField()
     private let sortButton = UIButton()
+    private let topicsCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        return cv
+    }()
     
     private var articles: [Article] = []
     private var filteredArticles: [Article] = []
+    private var topics: [String] = []
     private var searchWorkItem: DispatchWorkItem?
     private var articleService = ArticleService()
     
@@ -37,6 +45,7 @@ class ArticlesViewController: UIViewController {
         
         setupViews()
         fetchArticles()
+        fetchTopics()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -93,8 +102,6 @@ class ArticlesViewController: UIViewController {
         sortButton.setImage(UIImage(systemName: imageName), for: .normal)
         
         sortArticlesByDate()
-        
-        fetchTopics()
     }
     
     
@@ -102,6 +109,7 @@ class ArticlesViewController: UIViewController {
         view.addSubview(searchTextField)
         view.addSubview(articlesTableView)
         view.addSubview(sortButton)
+        view.addSubview(topicsCollectionView)
         
         searchTextField.addTarget(self, action: #selector(searchTextFieldChanged), for: .editingChanged)
         
@@ -112,6 +120,10 @@ class ArticlesViewController: UIViewController {
         
         refreshControl.addTarget(self, action: #selector(refreshArticles), for: .valueChanged)
         articlesTableView.refreshControl = refreshControl
+        
+        topicsCollectionView.delegate = self
+        topicsCollectionView.dataSource = self
+        topicsCollectionView.register(TopicCollectionViewCell.self, forCellWithReuseIdentifier: "TopicCollectionViewCell")
         
         sortButton.addTarget(self, action: #selector(sortArticles), for: .touchUpInside)
         
@@ -145,7 +157,12 @@ class ArticlesViewController: UIViewController {
         sortButton.autoPinEdge(.leading, to: .trailing, of: searchTextField, withOffset: 6)
         sortButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
         
-        articlesTableView.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 12)
+        topicsCollectionView.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 12)
+        topicsCollectionView.autoPinEdge(toSuperviewEdge: .leading)
+        topicsCollectionView.autoPinEdge(toSuperviewEdge: .trailing)
+        topicsCollectionView.autoSetDimension(.height, toSize: 50)
+        
+        articlesTableView.autoPinEdge(.top, to: .bottom, of: topicsCollectionView, withOffset: 12)
         articlesTableView.autoPinEdge(toSuperviewEdge: .leading)
         articlesTableView.autoPinEdge(toSuperviewEdge: .trailing)
         articlesTableView.autoPinEdge(toSuperviewSafeArea: .bottom)
@@ -186,6 +203,10 @@ class ArticlesViewController: UIViewController {
             
             switch result {
             case .success(let topics):
+                self.topics = topics
+                DispatchQueue.main.async {
+                    self.topicsCollectionView.reloadData()
+                }
                 print(topics)
             case .failure(_):
                 print("failed to fetch topics")
@@ -221,7 +242,9 @@ extension ArticlesViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let article = filteredArticles[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ArticlesTableViewCell", for: indexPath) as! ArticlesTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ArticlesTableViewCell", for: indexPath) as? ArticlesTableViewCell else {
+            return UITableViewCell()
+        }
         cell.delegate = self
         cell.configure(article: article)
         return cell
@@ -250,4 +273,35 @@ extension ArticlesViewController {
         }
     }
     
+}
+
+extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        print(topics.count)
+        return topics.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let topic = topics[indexPath.row]
+        guard let cell = topicsCollectionView.dequeueReusableCell(withReuseIdentifier: "TopicCollectionViewCell", for: indexPath) as? TopicCollectionViewCell else {
+            print("ne mere")
+            return UICollectionViewCell()
+        }
+        cell.configure(topic: topic)
+        return cell
+    }
+
+}
+
+extension ArticlesViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let topic = topics[indexPath.row]
+        let font = UIFont.systemFont(ofSize: 14)
+        let textWidth = topic.size(withAttributes: [NSAttributedString.Key.font: font]).width
+        let padding: CGFloat = 20
+        
+        return CGSize(width: textWidth + padding + 2, height: 30)
+    }
 }
