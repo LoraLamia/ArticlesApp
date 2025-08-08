@@ -10,7 +10,7 @@ import Alamofire
 
 class ArticleService {
     private let headers: HTTPHeaders = [
-        "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTViODEzNWUyODJlMjMzZDc1NGU1ZiIsInVzZXJuYW1lIjoiam9obi5kb2UudGVzdGlyYW5qZTUiLCJyb2xlIjoiQmFzaWMiLCJpYXQiOjE3NTQ2NDI0NTEsImV4cCI6MTc1NDY1MzI1MX0.SN5C0nibRDo9x5aAft40pyN1ONivuin1JbZsJTx6oP0"
+        "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTYyNTVlMDdiN2MwYTVkZWZlMDhjMCIsInVzZXJuYW1lIjoiam9obi5rdXBhdHR0Iiwicm9sZSI6IkJhc2ljIiwiaWF0IjoxNzU0NjcwNDMwLCJleHAiOjE3NTQ2ODEyMzB9.lAU13kvwlI6jd9W7nbj18EMiy1lkT1oL1wpEkyx4pTE"
     ]
     
     func fetchArticles(page: Int, completion: @escaping (Result<[Article], AFError>) -> Void) {

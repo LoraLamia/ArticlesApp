@@ -36,10 +36,6 @@ class ArticlesViewController: UIViewController {
     
     private let refreshControl = UIRefreshControl()
     
-    let headers: HTTPHeaders = [
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTViODEzNWUyODJlMjMzZDc1NGU1ZiIsInVzZXJuYW1lIjoiam9obi5kb2UudGVzdGlyYW5qZTUiLCJyb2xlIjoiQmFzaWMiLCJpYXQiOjE3NTQ2NDI0NTEsImV4cCI6MTc1NDY1MzI1MX0.SN5C0nibRDo9x5aAft40pyN1ONivuin1JbZsJTx6oP0"
-    ]
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -142,6 +138,7 @@ class ArticlesViewController: UIViewController {
         searchTextField.placeholder = "Search articles"
         
         sortButton.setImage(UIImage(systemName: "arrow.down"), for: .normal)
+
     }
     
     private func setupConstraints() {
@@ -158,8 +155,8 @@ class ArticlesViewController: UIViewController {
         sortButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
         
         topicsCollectionView.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 12)
-        topicsCollectionView.autoPinEdge(toSuperviewEdge: .leading)
-        topicsCollectionView.autoPinEdge(toSuperviewEdge: .trailing)
+        topicsCollectionView.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
+        topicsCollectionView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8)
         topicsCollectionView.autoSetDimension(.height, toSize: 50)
         
         articlesTableView.autoPinEdge(.top, to: .bottom, of: topicsCollectionView, withOffset: 12)
@@ -305,3 +302,5 @@ extension ArticlesViewController: UICollectionViewDelegateFlowLayout {
         return CGSize(width: textWidth + padding + 2, height: 30)
     }
 }
+
+
