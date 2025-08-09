@@ -61,9 +61,20 @@ class ArticlesViewController: UIViewController {
             guard let self = self else { return }
             
             if searchText.isEmpty {
-                self.filteredArticles = self.articles
+                if self.selectedTopic == "all articles" {
+                    self.filteredArticles = self.articles
+                } else {
+                    self.filteredArticles = self.articles.filter { $0.topic == self.selectedTopic }
+                }
             } else {
-                self.filteredArticles = self.filteredArticles.filter { article in
+                let baseArticles: [Article]
+                if self.selectedTopic == "all articles" {
+                    baseArticles = self.articles
+                } else {
+                    baseArticles = self.articles.filter { $0.topic == self.selectedTopic }
+                }
+                
+                self.filteredArticles = baseArticles.filter { article in
                     
                     let title = article.title.lowercased().contains(searchText)
                     let summary = article.summary.lowercased().contains(searchText)
