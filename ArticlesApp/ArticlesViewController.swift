@@ -157,8 +157,8 @@ class ArticlesViewController: UIViewController {
         sortButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
         
         topicsCollectionView.autoPinEdge(.top, to: .bottom, of: searchTextField, withOffset: 12)
-        topicsCollectionView.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
-        topicsCollectionView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8)
+        topicsCollectionView.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
+        topicsCollectionView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
         topicsCollectionView.autoSetDimension(.height, toSize: 50)
         
         articlesTableView.autoPinEdge(.top, to: .bottom, of: topicsCollectionView, withOffset: 12)
