@@ -11,16 +11,27 @@ import Alamofire
 
 class FavoritesViewController: UIViewController {
     
-    let favoritesTableView = UITableView()
+    private let favoritesTableView = UITableView()
+    private let emptyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No favorites yet!"
+        label.textAlignment = .center
+        label.textColor = .gray
+        label.font = UIFont.systemFont(ofSize: 24, weight: .medium)
+        label.isHidden = true
+        return label
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
+        setupEmptyLabel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         favoritesTableView.reloadData()
+        updateEmptyState()
     }
     
     private func setupTableView() {
@@ -30,16 +41,27 @@ class FavoritesViewController: UIViewController {
         
         favoritesTableView.delegate = self
         favoritesTableView.dataSource = self
-        
         favoritesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
     }
+    
+    private func setupEmptyLabel() {
+            view.addSubview(emptyLabel)
+            emptyLabel.autoAlignAxis(toSuperviewAxis: .vertical)
+            emptyLabel.autoAlignAxis(toSuperviewAxis: .horizontal)
+        }
+        
+        private func updateEmptyState() {
+            let isEmpty = FavoritesSingleton.shared.favoritesArticles.isEmpty
+            emptyLabel.isHidden = !isEmpty
+            favoritesTableView.isHidden = isEmpty
+        }
 
 }
 
 
 extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        FavoritesSingleton.shared.favoritesArticles.count
+        return FavoritesSingleton.shared.favoritesArticles.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -60,6 +82,7 @@ extension FavoritesViewController: ArticlesTableViewCellDelegate {
             FavoritesSingleton.shared.removeFromFavorites(article: article)
         }
         favoritesTableView.reloadData()
+        updateEmptyState()
     }
     
     

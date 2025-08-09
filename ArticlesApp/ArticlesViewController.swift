@@ -23,8 +23,10 @@ class ArticlesViewController: UIViewController {
     private let topicsCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.showsHorizontalScrollIndicator = false
         return cv
     }()
     
@@ -259,6 +261,8 @@ extension ArticlesViewController: ArticlesTableViewCellDelegate {
 
 extension ArticlesViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard let _ = scrollView as? UITableView else { return }
+        
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.size.height
@@ -289,18 +293,3 @@ extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewData
     }
 
 }
-
-extension ArticlesViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let topic = topics[indexPath.row]
-        let font = UIFont.systemFont(ofSize: 14)
-        let textWidth = topic.size(withAttributes: [NSAttributedString.Key.font: font]).width
-        let padding: CGFloat = 20
-        
-        return CGSize(width: textWidth + padding + 2, height: 30)
-    }
-}
-
-
