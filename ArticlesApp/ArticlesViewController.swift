@@ -16,6 +16,7 @@ class ArticlesViewController: UIViewController {
     private var isLoadingMore = false
     private var allArticlesLoaded = false
     private var isDescendingSort = false
+    private var selectedTopic = "all articles"
     
     private let articlesTableView = UITableView()
     private let searchTextField = UITextField()
@@ -62,7 +63,7 @@ class ArticlesViewController: UIViewController {
             if searchText.isEmpty {
                 self.filteredArticles = self.articles
             } else {
-                self.filteredArticles = self.articles.filter { article in
+                self.filteredArticles = self.filteredArticles.filter { article in
                     
                     let title = article.title.lowercased().contains(searchText)
                     let summary = article.summary.lowercased().contains(searchText)
@@ -85,6 +86,10 @@ class ArticlesViewController: UIViewController {
     }
     
     @objc private func refreshArticles() {
+        guard selectedTopic == "all articles" else {
+            refreshControl.endRefreshing()
+            return
+        }
         currentPage = 1
         allArticlesLoaded = false
         articles.removeAll()
@@ -260,6 +265,7 @@ extension ArticlesViewController: ArticlesTableViewCellDelegate {
 
 extension ArticlesViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard selectedTopic == "all articles" else { return }
         guard let _ = scrollView as? UITableView else { return }
         
         let offsetY = scrollView.contentOffset.y
@@ -293,6 +299,8 @@ extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewData
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let topic = topics[indexPath.row]
+        selectedTopic = topic
+        
         if topic == "all articles" {
             filteredArticles = articles
         } else {
@@ -300,5 +308,5 @@ extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewData
         }
         sortArticlesByDate()
     }
-
+    
 }
