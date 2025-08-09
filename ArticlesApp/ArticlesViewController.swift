@@ -202,11 +202,10 @@ class ArticlesViewController: UIViewController {
             
             switch result {
             case .success(let topics):
-                self.topics = topics
+                self.topics = ["all articles"] + topics
                 DispatchQueue.main.async {
                     self.topicsCollectionView.reloadData()
                 }
-                print(topics)
             case .failure(_):
                 print("failed to fetch topics")
             }
@@ -290,6 +289,16 @@ extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewData
         }
         cell.configure(topic: topic)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let topic = topics[indexPath.row]
+        if topic == "all articles" {
+            filteredArticles = articles
+        } else {
+            filteredArticles = articles.filter { $0.topic == topic }
+        }
+        sortArticlesByDate()
     }
 
 }
