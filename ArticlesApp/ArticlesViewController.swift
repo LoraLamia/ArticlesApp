@@ -37,8 +37,29 @@ class ArticlesViewController: UIViewController {
         return !text.isEmpty
     }
     
+    private var filteredArticles: [Article] {
+        let baseArticles: [Article]
+        
+        if selectedTopic == "all articles" {
+            baseArticles = articles
+        } else {
+            baseArticles = articles.filter { $0.topic == selectedTopic }
+        }
+        
+        guard let searchText = searchTextField.text?.lowercased(), !searchText.isEmpty else {
+            return baseArticles.sorted { isDescendingSort ? $0.publishedAt > $1.publishedAt : $0.publishedAt < $1.publishedAt }
+        }
+        
+        return baseArticles.filter { article in
+            article.title.lowercased().contains(searchText) ||
+            article.summary.lowercased().contains(searchText) ||
+            article.author.lowercased().contains(searchText) ||
+            article.topic.lowercased().contains(searchText) ||
+            article.tags.contains { $0.lowercased().contains(searchText) }
+        }.sorted { isDescendingSort ? $0.publishedAt > $1.publishedAt : $0.publishedAt < $1.publishedAt }
+    }
+    
     private var articles: [Article] = []
-    private var filteredArticles: [Article] = []
     private var topics: [String] = []
     private var searchWorkItem: DispatchWorkItem?
     private var articleService = ArticleService()
@@ -66,35 +87,8 @@ class ArticlesViewController: UIViewController {
         searchWorkItem = DispatchWorkItem { [weak self] in
             guard let self = self else { return }
             
-            if searchText.isEmpty {
-                if self.selectedTopic == "all articles" {
-                    self.filteredArticles = self.articles
-                } else {
-                    self.filteredArticles = self.articles.filter { $0.topic == self.selectedTopic }
-                }
-            } else {
-                let baseArticles: [Article]
-                if self.selectedTopic == "all articles" {
-                    baseArticles = self.articles
-                } else {
-                    baseArticles = self.articles.filter { $0.topic == self.selectedTopic }
-                }
-                
-                self.filteredArticles = baseArticles.filter { article in
-                    
-                    let title = article.title.lowercased().contains(searchText)
-                    let summary = article.summary.lowercased().contains(searchText)
-                    let author = article.author.lowercased().contains(searchText)
-                    let topic = article.topic.lowercased().contains(searchText)
-                    let tags = article.tags.contains { tag in
-                        tag.lowercased().contains(searchText)
-                    }
-                    return title || summary || author || topic || tags
-                }
-            }
-            
             DispatchQueue.main.async {
-                self.sortArticlesByDate()
+                self.articlesTableView.reloadData()
             }
             
         }
@@ -110,7 +104,6 @@ class ArticlesViewController: UIViewController {
         currentPage = 1
         allArticlesLoaded = false
         articles.removeAll()
-        filteredArticles.removeAll()
         articlesTableView.reloadData()
         fetchArticles()
     }
@@ -121,7 +114,10 @@ class ArticlesViewController: UIViewController {
         let imageName = isDescendingSort ? "arrow.up" : "arrow.down"
         sortButton.setImage(UIImage(systemName: imageName), for: .normal)
         
-        sortArticlesByDate()
+        DispatchQueue.main.async {
+            self.articlesTableView.setContentOffset(.zero, animated: true)
+        }
+        articlesTableView.reloadData()
     }
     
     
@@ -189,17 +185,6 @@ class ArticlesViewController: UIViewController {
         articlesTableView.autoPinEdge(toSuperviewSafeArea: .bottom)
     }
     
-    private func sortArticlesByDate() {
-        filteredArticles.sort {
-            isDescendingSort ? $0.publishedAt > $1.publishedAt : $0.publishedAt < $1.publishedAt
-        }
-        articlesTableView.reloadData()
-        
-        DispatchQueue.main.async {
-            self.articlesTableView.setContentOffset(.zero, animated: true)
-        }
-    }
-    
     private func fetchArticles() {
         guard !isLoadingMore || currentPage == 1 else { return }
         isLoadingMore = true
@@ -241,8 +226,6 @@ class ArticlesViewController: UIViewController {
         }
         
         self.articles.append(contentsOf: newArticles)
-        self.filteredArticles = self.articles
-        self.sortArticlesByDate()
         self.currentPage += 1
         self.articlesTableView.reloadData()
     }
@@ -321,13 +304,7 @@ extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewData
         let topic = topics[indexPath.row]
         selectedTopic = topic
         
-        if topic == "all articles" {
-            filteredArticles = articles
-        } else {
-            filteredArticles = articles.filter { $0.topic == topic }
-        }
-        sortArticlesByDate()
-        
+        articlesTableView.reloadData()
         collectionView.collectionViewLayout.invalidateLayout() //this line is here because collectionview has problems with automatic dimension
         collectionView.reloadData()
     }
