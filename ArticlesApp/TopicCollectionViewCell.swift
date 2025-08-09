@@ -43,7 +43,7 @@ class TopicCollectionViewCell: UICollectionViewCell {
         contentView.backgroundColor = .systemBlue
         contentView.layer.cornerRadius = 8
         contentView.clipsToBounds = true
-
+        
         topicLabel.textColor = .white
         topicLabel.font = .boldSystemFont(ofSize: 14)
         topicLabel.textAlignment = .center
@@ -53,6 +53,16 @@ class TopicCollectionViewCell: UICollectionViewCell {
     func configure(topic: String) {
         topicLabel.text = topic
         print("celija: \(topic)")
+    }
+    
+    func setSelectedMoja(_ selected: Bool) {
+        if selected {
+            contentView.backgroundColor = .systemOrange
+            topicLabel.textColor = .black
+        } else {
+            contentView.backgroundColor = .systemBlue
+            topicLabel.textColor = .white
+        }
     }
     
 }

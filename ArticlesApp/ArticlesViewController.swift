@@ -31,6 +31,12 @@ class ArticlesViewController: UIViewController {
         return cv
     }()
     
+    private var isSearching: Bool {
+        guard let text = searchTextField.text else { return false }
+        
+        return !text.isEmpty
+    }
+    
     private var articles: [Article] = []
     private var filteredArticles: [Article] = []
     private var topics: [String] = []
@@ -97,7 +103,7 @@ class ArticlesViewController: UIViewController {
     }
     
     @objc private func refreshArticles() {
-        guard selectedTopic == "all articles" else {
+        guard selectedTopic == "all articles" && !isSearching else {
             refreshControl.endRefreshing()
             return
         }
@@ -276,7 +282,7 @@ extension ArticlesViewController: ArticlesTableViewCellDelegate {
 
 extension ArticlesViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard selectedTopic == "all articles" else { return }
+        guard selectedTopic == "all articles" && !isSearching else { return }
         guard let _ = scrollView as? UITableView else { return }
         
         let offsetY = scrollView.contentOffset.y
@@ -301,10 +307,13 @@ extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewData
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let topic = topics[indexPath.row]
         guard let cell = topicsCollectionView.dequeueReusableCell(withReuseIdentifier: "TopicCollectionViewCell", for: indexPath) as? TopicCollectionViewCell else {
-            print("ne mere")
             return UICollectionViewCell()
         }
         cell.configure(topic: topic)
+        
+        let isSelected = topic == selectedTopic
+        cell.setSelectedMoja(isSelected)
+        
         return cell
     }
     
@@ -318,6 +327,9 @@ extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewData
             filteredArticles = articles.filter { $0.topic == topic }
         }
         sortArticlesByDate()
+        
+        collectionView.collectionViewLayout.invalidateLayout() //this line is here because collectionview has problems with automatic dimension
+        collectionView.reloadData()
     }
     
 }
