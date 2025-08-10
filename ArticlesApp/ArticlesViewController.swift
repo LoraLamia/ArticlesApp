@@ -61,10 +61,10 @@ class ArticlesViewController: UIViewController {
     @objc private func searchTextFieldChanged() {
         searchWorkItem?.cancel()
         
-        let searchText = searchTextField.text?.lowercased() ?? ""
-        
         searchWorkItem = DispatchWorkItem { [weak self] in
             guard let self = self else { return }
+            
+            let searchText = self.searchTextField.text?.lowercased() ?? ""
             
             if searchText.isEmpty {
                 if self.selectedTopic == "all articles" {
@@ -93,9 +93,7 @@ class ArticlesViewController: UIViewController {
                 }
             }
             
-            DispatchQueue.main.async {
-                self.sortArticlesByDate()
-            }
+            self.sortArticlesByDate()
             
         }
         
@@ -244,7 +242,6 @@ class ArticlesViewController: UIViewController {
         self.filteredArticles = self.articles
         self.sortArticlesByDate()
         self.currentPage += 1
-        self.articlesTableView.reloadData()
     }
     
     private func handleErrorCase() {
@@ -269,9 +266,7 @@ extension ArticlesViewController: UITableViewDelegate, UITableViewDataSource {
         cell.configure(article: article)
         return cell
     }
-    
 }
-
 
 extension ArticlesViewController: ArticlesTableViewCellDelegate {
     func didTapFavoriteButton(article: Article) {
@@ -282,8 +277,7 @@ extension ArticlesViewController: ArticlesTableViewCellDelegate {
 
 extension ArticlesViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard selectedTopic == "all articles" && !isSearching else { return }
-        guard let _ = scrollView as? UITableView else { return }
+        guard selectedTopic == "all articles" && !isSearching, let _ = scrollView as? UITableView else { return }
         
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
@@ -320,6 +314,8 @@ extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewData
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let topic = topics[indexPath.row]
         selectedTopic = topic
+        
+        searchTextField.text = ""
         
         if topic == "all articles" {
             filteredArticles = articles
