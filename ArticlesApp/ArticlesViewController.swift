@@ -273,7 +273,7 @@ extension ArticlesViewController: UITableViewDelegate, UITableViewDataSource {
 extension ArticlesViewController: ArticlesTableViewCellDelegate {
     func didTapFavoriteButton(article: Article) {
         
-        FavoritesSingleton.shared.isFavorite(article) ? FavoritesSingleton.shared.removeFromFavorites(article: article) : FavoritesSingleton.shared.addToFavorites(article: article)
+        FavoritesManager.shared.isFavorite(article) ? FavoritesManager.shared.removeFromFavorites(article: article) : FavoritesManager.shared.addToFavorites(article: article)
     }
 }
 

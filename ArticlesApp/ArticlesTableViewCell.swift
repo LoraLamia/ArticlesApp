@@ -154,7 +154,7 @@ class ArticlesTableViewCell: UITableViewCell {
     
     private func setImageForButton() {
         guard let article = article else { return }
-        let imageName = FavoritesSingleton.shared.isFavorite(article) ? "star.fill" : "star"
+        let imageName = FavoritesManager.shared.isFavorite(article) ? "star.fill" : "star"
         favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
     

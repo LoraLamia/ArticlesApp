@@ -1,12 +1,12 @@
 //
-//  FavoritesSingleton.swift
+//  FavoritesManager.swift
 //  ArticlesApp
 //
 //  Created by Lora Zubic on 06.08.2025..
 //
 
-class FavoritesSingleton {
-    static let shared = FavoritesSingleton()
+class FavoritesManager {
+    static let shared = FavoritesManager()
     var favoritesArticles: [Article] = []
     
     private init() {}

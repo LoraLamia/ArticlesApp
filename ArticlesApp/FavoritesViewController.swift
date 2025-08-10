@@ -57,7 +57,7 @@ class FavoritesViewController: UIViewController {
     }
     
     private func updateEmptyState() {
-        let isEmpty = FavoritesSingleton.shared.favoritesArticles.isEmpty
+        let isEmpty = FavoritesManager.shared.favoritesArticles.isEmpty
         emptyLabel.isHidden = !isEmpty
         favoritesTableView.isHidden = isEmpty
     }
@@ -66,11 +66,11 @@ class FavoritesViewController: UIViewController {
 
 extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return FavoritesSingleton.shared.favoritesArticles.count
+        return FavoritesManager.shared.favoritesArticles.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let article = FavoritesSingleton.shared.favoritesArticles[indexPath.row]
+        let article = FavoritesManager.shared.favoritesArticles[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "ArticlesTableViewCell", for: indexPath) as! ArticlesTableViewCell
         cell.delegate = self
         cell.configure(article: article)
@@ -81,8 +81,8 @@ extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension FavoritesViewController: ArticlesTableViewCellDelegate {
     func didTapFavoriteButton(article: Article) {
-        if FavoritesSingleton.shared.isFavorite(article) {
-            FavoritesSingleton.shared.removeFromFavorites(article: article)
+        if FavoritesManager.shared.isFavorite(article) {
+            FavoritesManager.shared.removeFromFavorites(article: article)
         }
         favoritesTableView.reloadData()
         updateEmptyState()
