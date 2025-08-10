@@ -25,4 +25,3 @@ class FavoritesSingleton {
         return favoritesArticles.contains { $0.id == article.id }
     }
 }
-

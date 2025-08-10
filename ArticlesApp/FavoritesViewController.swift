@@ -64,7 +64,6 @@ class FavoritesViewController: UIViewController {
     
 }
 
-
 extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return FavoritesSingleton.shared.favoritesArticles.count
@@ -77,10 +76,8 @@ extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
         cell.configure(article: article)
         return cell
     }
-    
+
 }
-
-
 
 extension FavoritesViewController: ArticlesTableViewCellDelegate {
     func didTapFavoriteButton(article: Article) {
@@ -90,6 +87,5 @@ extension FavoritesViewController: ArticlesTableViewCellDelegate {
         favoritesTableView.reloadData()
         updateEmptyState()
     }
-    
     
 }

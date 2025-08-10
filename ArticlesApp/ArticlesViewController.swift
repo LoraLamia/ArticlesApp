@@ -7,7 +7,6 @@
 
 import UIKit
 import PureLayout
-import Alamofire
 import MBProgressHUD
 
 class ArticlesViewController: UIViewController {
@@ -137,7 +136,6 @@ class ArticlesViewController: UIViewController {
         sortButton.addTarget(self, action: #selector(sortArticles), for: .touchUpInside)
         refreshControl.addTarget(self, action: #selector(refreshArticles), for: .valueChanged)
     }
-    
     
     private func setupTableView() {
         articlesTableView.rowHeight = UITableView.automaticDimension
@@ -281,7 +279,7 @@ extension ArticlesViewController: ArticlesTableViewCellDelegate {
 
 extension ArticlesViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard selectedTopic == "all articles" && !isSearching, let _ = scrollView as? UITableView else { return }
+        guard selectedTopic == "all articles" && !isSearching, scrollView is UITableView else { return }
         
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
