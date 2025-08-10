@@ -53,9 +53,9 @@ class TopicCollectionViewCell: UICollectionViewCell {
     func configure(topic: String, selected: Bool) {
         topicLabel.text = topic
         
-        if selected {
-            contentView.backgroundColor = .systemOrange
-            topicLabel.textColor = .black
+        if !selected {
+            contentView.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.3)
+            topicLabel.textColor = UIColor.systemBlue
         } else {
             contentView.backgroundColor = .systemBlue
             topicLabel.textColor = .white
