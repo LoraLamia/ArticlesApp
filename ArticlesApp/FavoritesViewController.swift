@@ -12,20 +12,15 @@ import Alamofire
 class FavoritesViewController: UIViewController {
     
     private let favoritesTableView = UITableView()
-    private let emptyLabel: UILabel = {
-        let label = UILabel()
-        label.text = "No favorites yet!"
-        label.textAlignment = .center
-        label.textColor = .gray
-        label.font = UIFont.systemFont(ofSize: 24, weight: .medium)
-        label.isHidden = true
-        return label
-    }()
+    private let emptyLabel = UILabel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        addSubviews()
+        setupConstraints()
+        styleViews()
         setupTableView()
-        setupEmptyLabel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -34,28 +29,39 @@ class FavoritesViewController: UIViewController {
         updateEmptyState()
     }
     
-    private func setupTableView() {
+    private func addSubviews() {
         view.addSubview(favoritesTableView)
-        favoritesTableView.autoPinEdgesToSuperviewEdges()
-        favoritesTableView.rowHeight = UITableView.automaticDimension
+        view.addSubview(emptyLabel)
+    }
+    
+    private func setupConstraints() {
+        emptyLabel.autoAlignAxis(toSuperviewAxis: .vertical)
+        emptyLabel.autoAlignAxis(toSuperviewAxis: .horizontal)
         
+        favoritesTableView.autoPinEdgesToSuperviewEdges()
+    }
+    
+    private func styleViews() {
+        emptyLabel.text = "No favorites yet!"
+        emptyLabel.textAlignment = .center
+        emptyLabel.textColor = .gray
+        emptyLabel.font = UIFont.systemFont(ofSize: 24, weight: .medium)
+        emptyLabel.isHidden = true
+    }
+    
+    private func setupTableView() {
+        favoritesTableView.rowHeight = UITableView.automaticDimension
         favoritesTableView.delegate = self
         favoritesTableView.dataSource = self
         favoritesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
     }
     
-    private func setupEmptyLabel() {
-            view.addSubview(emptyLabel)
-            emptyLabel.autoAlignAxis(toSuperviewAxis: .vertical)
-            emptyLabel.autoAlignAxis(toSuperviewAxis: .horizontal)
-        }
-        
-        private func updateEmptyState() {
-            let isEmpty = FavoritesSingleton.shared.favoritesArticles.isEmpty
-            emptyLabel.isHidden = !isEmpty
-            favoritesTableView.isHidden = isEmpty
-        }
-
+    private func updateEmptyState() {
+        let isEmpty = FavoritesSingleton.shared.favoritesArticles.isEmpty
+        emptyLabel.isHidden = !isEmpty
+        favoritesTableView.isHidden = isEmpty
+    }
+    
 }
 
 
@@ -71,7 +77,7 @@ extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
         cell.configure(article: article)
         return cell
     }
-        
+    
 }
 
 

@@ -50,12 +50,9 @@ class TopicCollectionViewCell: UICollectionViewCell {
         topicLabel.numberOfLines = 1
     }
     
-    func configure(topic: String) {
+    func configure(topic: String, selected: Bool) {
         topicLabel.text = topic
-        print("celija: \(topic)")
-    }
-    
-    func setSelectedMoja(_ selected: Bool) {
+        
         if selected {
             contentView.backgroundColor = .systemOrange
             topicLabel.textColor = .black

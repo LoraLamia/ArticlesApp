@@ -48,7 +48,12 @@ class ArticlesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupViews()
+        addSubviews()
+        setupConstraints()
+        styleViews()
+        setupTableView()
+        setupCollectionView()
+        addActions()
         fetchArticles()
         fetchTopics()
     }
@@ -122,34 +127,35 @@ class ArticlesViewController: UIViewController {
         sortArticlesByDate()
     }
     
-    
-    private func setupViews() {
+    private func addSubviews() {
         view.addSubview(searchTextField)
         view.addSubview(articlesTableView)
         view.addSubview(sortButton)
         view.addSubview(topicsCollectionView)
-        
+    }
+    
+    private func addActions() {
         searchTextField.addTarget(self, action: #selector(searchTextFieldChanged), for: .editingChanged)
-        
+        sortButton.addTarget(self, action: #selector(sortArticles), for: .touchUpInside)
+        refreshControl.addTarget(self, action: #selector(refreshArticles), for: .valueChanged)
+    }
+    
+    
+    private func setupTableView() {
         articlesTableView.rowHeight = UITableView.automaticDimension
         articlesTableView.delegate = self
         articlesTableView.dataSource = self
         articlesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
-        
-        refreshControl.addTarget(self, action: #selector(refreshArticles), for: .valueChanged)
         articlesTableView.refreshControl = refreshControl
-        
+    }
+    
+    private func setupCollectionView() {
         topicsCollectionView.delegate = self
         topicsCollectionView.dataSource = self
         topicsCollectionView.register(TopicCollectionViewCell.self, forCellWithReuseIdentifier: "TopicCollectionViewCell")
-        
-        sortButton.addTarget(self, action: #selector(sortArticles), for: .touchUpInside)
-        
-        editViews()
-        setupConstraints()
     }
     
-    private func editViews() {
+    private func styleViews() {
         searchTextField.backgroundColor = .systemGray6
         searchTextField.layer.cornerRadius = 12
         searchTextField.layer.borderWidth = 1.5
@@ -294,7 +300,6 @@ extension ArticlesViewController {
 
 extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print(topics.count)
         return topics.count
     }
     
@@ -303,10 +308,9 @@ extension ArticlesViewController: UICollectionViewDelegate, UICollectionViewData
         guard let cell = topicsCollectionView.dequeueReusableCell(withReuseIdentifier: "TopicCollectionViewCell", for: indexPath) as? TopicCollectionViewCell else {
             return UICollectionViewCell()
         }
-        cell.configure(topic: topic)
         
         let isSelected = topic == selectedTopic
-        cell.setSelectedMoja(isSelected)
+        cell.configure(topic: topic, selected: isSelected)
         
         return cell
     }
