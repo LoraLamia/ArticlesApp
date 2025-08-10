@@ -17,10 +17,22 @@ class ArticlesViewController: UIViewController {
     private var allArticlesLoaded = false
     private var isDescendingSort = false
     private var selectedTopic = "all articles"
+    private var articles: [Article] = []
+    private var filteredArticles: [Article] = []
+    private var topics: [String] = []
+    private var isSearching: Bool {
+        guard let text = searchTextField.text else { return false }
+        
+        return !text.isEmpty
+    }
+    
+    private var searchWorkItem: DispatchWorkItem?
+    private var articleService = ArticleService()
     
     private let articlesTableView = UITableView()
     private let searchTextField = UITextField()
     private let sortButton = UIButton()
+    private let refreshControl = UIRefreshControl()
     private let topicsCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -30,21 +42,7 @@ class ArticlesViewController: UIViewController {
         cv.showsHorizontalScrollIndicator = false
         return cv
     }()
-    
-    private var isSearching: Bool {
-        guard let text = searchTextField.text else { return false }
-        
-        return !text.isEmpty
-    }
-    
-    private var articles: [Article] = []
-    private var filteredArticles: [Article] = []
-    private var topics: [String] = []
-    private var searchWorkItem: DispatchWorkItem?
-    private var articleService = ArticleService()
-    
-    private let refreshControl = UIRefreshControl()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         

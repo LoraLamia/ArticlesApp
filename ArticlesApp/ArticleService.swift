@@ -43,12 +43,7 @@ class ArticleService {
         AF.request("http://localhost:3000/api/articles/topics", method: .get, headers: headers)
             .validate()
             .responseDecodable(of: [String].self) { response in
-                switch response.result {
-                case .success(let topics):
-                    completion(.success(topics))
-                case .failure(let error):
-                    completion(.failure(error))
-                }
+                completion(response.result)
             }
     }
 }
