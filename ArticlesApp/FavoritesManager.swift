@@ -7,10 +7,17 @@
 
 class FavoritesManager {
     static let shared = FavoritesManager()
+
+    // use `let` or `private(set) var`, nobody should be able to update this from the outside,
+    // that's why we have FavoritesManager that handles adding and removing
     var favoritesArticles: [Article] = []
     
-    private init() {}
-    
+    private init() {
+        // this would be a good place to load favorites from UserDefaults
+    }
+
+
+    // no persistence, favorites will disappear on realunch
     func addToFavorites(article: Article) {
         if !favoritesArticles.contains(where: { $0.id == article.id }) {
             favoritesArticles.append(article)

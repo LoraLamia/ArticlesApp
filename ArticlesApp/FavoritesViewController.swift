@@ -7,10 +7,12 @@
 
 import UIKit
 import PureLayout
-import Alamofire
+import Alamofire // not using it here
 
 class FavoritesViewController: UIViewController {
-    
+    // I see that you use FavoritesManager.shared in lots of places, so I'd suggest extracting it into property
+    // private let favoritesManager = FavoritesManager.shared
+
     private let favoritesTableView = UITableView()
     private let emptyLabel = UILabel()
     
@@ -53,7 +55,7 @@ class FavoritesViewController: UIViewController {
         favoritesTableView.rowHeight = UITableView.automaticDimension
         favoritesTableView.delegate = self
         favoritesTableView.dataSource = self
-        favoritesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
+        favoritesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell") // extract to identifier Constants
     }
     
     private func updateEmptyState() {
@@ -70,7 +72,7 @@ extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let article = FavoritesManager.shared.favoritesArticles[indexPath.row]
+        let article = FavoritesManager.shared.favoritesArticles[indexPath.row] // what if index out of bounds?
         let cell = tableView.dequeueReusableCell(withIdentifier: "ArticlesTableViewCell", for: indexPath) as! ArticlesTableViewCell
         cell.delegate = self
         cell.configure(article: article)
@@ -80,6 +82,12 @@ extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension FavoritesViewController: ArticlesTableViewCellDelegate {
+
+    // heavy-handed reload on unfavorite
+    // when the star is tapped, the whole table reloaded, this looks janky and loses scroll position
+    // rather try to locate the row and call deleteRows(at:with:) inside begin/endUpdates() for a smooth, animated removal
+    // and just in case, fallback to reloadData() only if the item isn’t found (should be rare)
+
     func didTapFavoriteButton(article: Article) {
         if FavoritesManager.shared.isFavorite(article) {
             FavoritesManager.shared.removeFromFavorites(article: article)

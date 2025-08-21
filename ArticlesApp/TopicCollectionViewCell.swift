@@ -23,7 +23,8 @@ class TopicCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
+    // should also call super.prepareForReuse()
     override func prepareForReuse() {
         topicLabel.text = ""
     }
@@ -33,12 +34,17 @@ class TopicCollectionViewCell: UICollectionViewCell {
     }
     
     private func setupConstraints() {
+        // PureLayout is fine, but still this could be simpler:
+        // let insets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        // topicLabel.autoPinEdgesToSuperviewMargins(with: insets)
+
         topicLabel.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
         topicLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
         topicLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8)
         topicLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: 8)
     }
-    
+
+    // great
     private func styleViews() {
         contentView.backgroundColor = .systemBlue
         contentView.layer.cornerRadius = 8
@@ -49,7 +55,8 @@ class TopicCollectionViewCell: UICollectionViewCell {
         topicLabel.textAlignment = .center
         topicLabel.numberOfLines = 1
     }
-    
+
+    // all great, just wanted to mention that for booleans naming is usually starts with `is`: selected -> isSelected
     func configure(topic: String, selected: Bool) {
         topicLabel.text = topic
         

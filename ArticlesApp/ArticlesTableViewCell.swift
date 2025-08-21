@@ -13,7 +13,8 @@ protocol ArticlesTableViewCellDelegate: AnyObject {
 }
 
 class ArticlesTableViewCell: UITableViewCell {
-    
+
+    // Great!
     weak var delegate: ArticlesTableViewCellDelegate?
     
     private let titleLabel = UILabel()
@@ -97,7 +98,8 @@ class ArticlesTableViewCell: UITableViewCell {
     private func addActions() {
         favoriteButton.addTarget(self, action: #selector(favoriteButtonPressed), for: .touchUpInside)
     }
-    
+
+    // nice and clean
     private func setupConstraints() {
         favoriteButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
         favoriteButton.autoAlignAxis(toSuperviewAxis: .horizontal)
@@ -124,6 +126,7 @@ class ArticlesTableViewCell: UITableViewCell {
     }
     
     @objc private func favoriteButtonPressed() {
+        // can use new syntax guard let article else { return }
         guard let article = article else { return }
         delegate?.didTapFavoriteButton(article: article)
         setAnimationForButton()
@@ -135,7 +138,9 @@ class ArticlesTableViewCell: UITableViewCell {
         titleLabel.text = article.title
         authorLabel.text = article.author
         summaryLabel.text = article.summary
-        
+
+        // instantiating DateFormatter inside configure is very expensive in a scrolling list
+        // same as with Article, could be extracted to external structure like DateService
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
@@ -145,7 +150,9 @@ class ArticlesTableViewCell: UITableViewCell {
         var tagText = ""
         tagText += "Topic: \(article.topic)"
         if !article.tags.isEmpty {
-            if !tagText.isEmpty { tagText += " | " }
+            // tagText will never be empty here as you add "Topic: ..." to it on line 151
+            // feel free to do something like this: tagText += "Topic: \(article.topic) | "
+
             tagText += "Tags: \(article.tags.joined(separator: ", "))"
         }
         tagsAndTopicLabel.text = tagText
@@ -157,7 +164,8 @@ class ArticlesTableViewCell: UITableViewCell {
         let imageName = FavoritesManager.shared.isFavorite(article) ? "star.fill" : "star"
         favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
-    
+
+    // great, but in past years I encountered app crashes that would occur when strong capturing self inside animate block
     private func setAnimationForButton() {
         UIView.animate(withDuration: 0.2, animations: {
             self.favoriteButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)

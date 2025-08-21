@@ -9,19 +9,22 @@ import UIKit
 import PureLayout
 import MBProgressHUD
 
+// big class, i'd suggest separating with extensions into networking, UI methods, TableController delegate methods etc.
 class ArticlesViewController: UIViewController {
     
     private var currentPage = 1
     private var isLoadingMore = false
     private var allArticlesLoaded = false
     private var isDescendingSort = false
-    private var selectedTopic = "all articles"
+    private var selectedTopic = "all articles" // extract to Constants
     private var articles: [Article] = []
     private var filteredArticles: [Article] = []
     private var topics: [String] = []
     private var isSearching: Bool {
+        // much simpler
+        // return searchTextField.text?.isEmpty ?? false
+
         guard let text = searchTextField.text else { return false }
-        
         return !text.isEmpty
     }
     
@@ -59,7 +62,8 @@ class ArticlesViewController: UIViewController {
         super.viewWillAppear(animated)
         articlesTableView.reloadData()
     }
-    
+
+    // ok, but more modern approach would be to use Combine .throttle or .debounce
     @objc private func searchTextFieldChanged() {
         searchWorkItem?.cancel()
         
@@ -141,14 +145,14 @@ class ArticlesViewController: UIViewController {
         articlesTableView.rowHeight = UITableView.automaticDimension
         articlesTableView.delegate = self
         articlesTableView.dataSource = self
-        articlesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell")
+        articlesTableView.register(ArticlesTableViewCell.self, forCellReuseIdentifier: "ArticlesTableViewCell") // extract identifier to Constants
         articlesTableView.refreshControl = refreshControl
     }
     
     private func setupCollectionView() {
         topicsCollectionView.delegate = self
         topicsCollectionView.dataSource = self
-        topicsCollectionView.register(TopicCollectionViewCell.self, forCellWithReuseIdentifier: "TopicCollectionViewCell")
+        topicsCollectionView.register(TopicCollectionViewCell.self, forCellWithReuseIdentifier: "TopicCollectionViewCell") // extract identifier to Constants
     }
     
     private func styleViews() {
@@ -203,18 +207,23 @@ class ArticlesViewController: UIViewController {
     private func fetchArticles() {
         guard !isLoadingMore || currentPage == 1 else { return }
         isLoadingMore = true
-        
-        articleService.fetchArticles(page: currentPage) { [weak self] result in
-            guard let self = self else { return }
-            self.isLoadingMore = false
-            self.refreshControl.endRefreshing()
-            
-            switch result {
-            case .success(let newArticles):
-                self.handleSuccesCase(newArticles: newArticles)
-            case .failure(_):
-                self.handleErrorCase()
-            }
+
+        // fetchArticles completion updates arrays and calls sortArticlesByDate() -> reloadData()
+        // if service completes off-main, that’s a problem, so it's best to ensure that ui updates on main thread
+
+        articleService.fetchArticles(page: currentPage) { [weak self] result in // why weak self here
+            //DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.isLoadingMore = false
+                self.refreshControl.endRefreshing()
+                
+                switch result {
+                case .success(let newArticles):
+                    self.handleSuccesCase(newArticles: newArticles)
+                case .failure(_):
+                    self.handleErrorCase()
+                }
+            //}
         }
     }
     
